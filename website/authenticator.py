@@ -2,7 +2,7 @@ from argon2 import PasswordHasher
 from . import db
 from .models import User
 from sqlalchemy import select, exists
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user
 from sqlalchemy.exc import IntegrityError
 
 class Authenticator():

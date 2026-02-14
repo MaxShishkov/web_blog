@@ -1,0 +1,52 @@
+from . import db
+from .models import User, Post
+from sqlalchemy import select, exists
+from sqlalchemy.exc import IntegrityError
+
+
+class PostManager():
+    def create_post(self, user_id: int, text: str ):
+        new_post = Post(
+            text = text,
+            author = user_id
+        )
+        
+        try:
+            db.session.add(new_post)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            print("Insert failed:", e)
+            
+    
+    def get_all_posts(self) -> list[Post]:
+        posts = db.session.scalars(select(Post)).all()
+        return posts
+    
+    def get_user_posts(self, username):
+        user = db.session.scalar(select(User).where(User.username == username))
+        
+        if not user:
+            raise ValueError("User doesn't exist")
+        
+        posts = db.session.scalars(select(Post).where(Post.author == user.id)).all()
+        return posts
+    
+    def get_post_by_id(self, id: int) -> Post:
+        post = db.session.scalar(select(Post).where(Post.id == id))
+        return post
+    
+    def delete_post(self, post_id: int, user_id: int):
+        rm_post = self.get_post_by_id(post_id)
+        if not rm_post:
+            raise ValueError("Post doesn't exist")
+        
+        if rm_post.author != user_id:
+            raise PermissionError("You don't have permission to delete this post")
+        
+        try:
+            db.session.delete(rm_post)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            print("Insert failed:", e)

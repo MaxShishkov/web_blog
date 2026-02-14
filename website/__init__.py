@@ -15,9 +15,11 @@ DB_NAME = "database.db"
 
 from .authenticator import Authenticator
 from .validator import Validator
+from .postmanager import PostManager
 
 authy = Authenticator()
 validator = Validator()
+pm = PostManager()
 
 def create_app():
     load_dotenv()
@@ -32,7 +34,7 @@ def create_app():
     app.register_blueprint(views)
     app.register_blueprint(auth)
     
-    from .models import User
+    from .models import User, Post
     
     create_database(app)
     
