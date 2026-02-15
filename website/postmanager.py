@@ -1,5 +1,5 @@
 from . import db
-from .models import User, Post, Comment
+from .models import User, Post, Comment, Like
 from sqlalchemy import select, exists
 from sqlalchemy.exc import IntegrityError
 
@@ -90,3 +90,25 @@ class PostManager():
         except IntegrityError as e:
             db.session.rollback()
             print("Delete failed:", e)
+
+
+    def toggle_like_on_post(self, user_id, post_id):
+        like = db.session.scalar(
+            select(Like).where(
+                Like.author == user_id,
+                Like.post_id == post_id
+            )
+        )
+        
+        try:
+            if like:
+                db.session.delete(like)
+                db.session.commit()
+            else:
+                like = Like(author = user_id, post_id = post_id)
+                db.session.add(like)
+                db.session.commit()
+                
+        except IntegrityError as e:
+            db.session.rollback()
+            print("Toggle on like failed:", e)

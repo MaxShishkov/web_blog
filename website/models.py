@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 MAX_STR_LEN = 50
 MAX_COMMENT_LEN = 200
 
+
 class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(MAX_STR_LEN), unique=True, nullable=False)
@@ -20,7 +21,9 @@ class User(db.Model, UserMixin):
     )
     posts = db.relationship("Post", backref='user', passive_deletes=True)
     comments = db.relationship("Comment", backref='user', passive_deletes=True)
-    
+    likes = db.relationship("Like", backref='user', passive_deletes=True)
+
+
 class Post(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(String(), nullable=False)
@@ -35,7 +38,9 @@ class Post(db.Model):
         nullable=False
     )
     comments = db.relationship("Comment", backref='post', passive_deletes=True)
-    
+    likes = db.relationship("Like", backref='post', passive_deletes=True)
+
+
 class Comment(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(String(MAX_COMMENT_LEN), nullable=False)
@@ -54,4 +59,22 @@ class Comment(db.Model):
         ForeignKey("post.id", ondelete="CASCADE"),
         nullable=False
     )
-    
+
+
+class Like(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    date_created: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=func.now(),
+        nullable=False
+    )
+    author: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    post_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("post.id", ondelete="CASCADE"),
+        nullable=False
+    )

@@ -13,6 +13,10 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
         crossorigin="anonymous">
     </script>
+    <script
+        src="https://kit.fontawesome.com/50c9c72464.js"
+        crossorigin="anonymous">
+    </script>
 
     <title>{% block title %}{% endblock %}</title>
 </head>
@@ -60,6 +64,9 @@
       {% endif %}
     {% endwith %}
     <div class="container">{% block content %}{% endblock %}</div>
-    
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='index.js')}}"
+    ></script>
 </body>
 </html>

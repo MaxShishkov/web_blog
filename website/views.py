@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from . import pm
 
@@ -82,3 +82,24 @@ def delete_comment(comment_id):
         flash("You donnot have permission to delete this comment", category="error")
         
     return redirect(url_for("views.home"))
+
+
+@views.route("/like-post/<post_id>", methods=['POST'])
+@login_required
+def like(post_id):
+    post = pm.get_post_by_id(post_id)
+
+    if not post:
+        return jsonify({'error': 'Post does not exist.'}), 400
+
+    pm.toggle_like_on_post(current_user.id, post_id)
+
+    # re-fetch the post so relationship lazy loads are attached to an active session
+    #post = pm.get_post_by_id(post_id)
+
+    return jsonify(
+        {
+            "likes": len(post.likes),
+            "liked": current_user.id in map(lambda x: x.author, post.likes)
+        }
+    )
