@@ -29,7 +29,7 @@ class PostManager():
         if not user:
             raise ValueError("User doesn't exist")
         
-        posts = db.session.scalars(select(Post).where(Post.author == user.id)).all()
+        posts = user.posts
         return posts
     
     def get_post_by_id(self, id: int) -> Post:
