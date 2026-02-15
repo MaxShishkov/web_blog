@@ -31,3 +31,6 @@ Create .env file inside website folder and provide `SECRET_KEY` variable.
 ```
 uv run app.py
 ```
+
+# Example
+<img width="1376" height="1117" alt="example" src="https://github.com/user-attachments/assets/ca00f6bf-b3a7-4f1e-88af-9f0c90c5d4c9" />
