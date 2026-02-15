@@ -38,7 +38,7 @@ class Authenticator():
         db.session.commit()
         return True
         
-    def get_user(self, email):
+    def get_user(self, email: str) -> User:
         user = db.session.scalar(
             select(User).where(User.email == email)
         )
@@ -61,7 +61,7 @@ class Authenticator():
         
 
     
-    def username_exist(self, username):
+    def username_exist(self, username: str) -> bool:
         return db.session.scalar(
             select(exists().where(User.username == username))
         )

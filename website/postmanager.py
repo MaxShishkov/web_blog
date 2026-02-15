@@ -24,7 +24,7 @@ class PostManager():
         return posts
 
 
-    def get_user_posts(self, username):
+    def get_user_posts(self, username: str):
         user = db.session.scalar(select(User).where(User.username == username))
         
         if not user:
@@ -55,7 +55,7 @@ class PostManager():
             print("delete failed:", e)
 
 
-    def create_comment(self, text, user_id, post_id):
+    def create_comment(self, text: str, user_id: int , post_id: int):
         post = db.session.scalar(select(Post).where(Post.id == post_id))
         
         if not post:
@@ -75,7 +75,7 @@ class PostManager():
             print("Insert failed:", e)
             
             
-    def delete_comment(self, comment_id, user_id):
+    def delete_comment(self, comment_id: str, user_id: str):
         comment = db.session.scalar(select(Comment).where(Comment.id == comment_id))
         
         if not comment:
@@ -92,7 +92,7 @@ class PostManager():
             print("Delete failed:", e)
 
 
-    def toggle_like_on_post(self, user_id, post_id):
+    def toggle_like_on_post(self, user_id: str, post_id: str):
         like = db.session.scalar(
             select(Like).where(
                 Like.author == user_id,
