@@ -53,3 +53,32 @@ def posts(username):
         return redirect(url_for('views.home'))
     
     return render_template("posts.html", user=current_user, posts=posts, username=username)
+
+
+@views.route("/create-comment/<post_id>", methods=["POST"])
+@login_required
+def create_comment(post_id):
+    text = request.form.get("text")
+    
+    if not text:
+        flash("Comment cannot be empty.", category="error")
+    else:
+        try:
+            pm.create_comment(text, current_user.id, post_id)
+        except ValueError:
+            flash("Post does not exist!", category="error")
+    
+    return redirect(url_for("views.home"))
+
+
+@views.route("/delete-comment/<comment_id>")
+@login_required
+def delete_comment(comment_id):
+    try:
+        pm.delete_comment(comment_id, current_user.id)
+    except ValueError:
+        flash("Comment does not exist", category="error")
+    except PermissionError:
+        flash("You donnot have permission to delete this comment", category="error")
+        
+    return redirect(url_for("views.home"))

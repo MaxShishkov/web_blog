@@ -1,5 +1,5 @@
 from . import db
-from .models import User, Post
+from .models import User, Post, Comment
 from sqlalchemy import select, exists
 from sqlalchemy.exc import IntegrityError
 
@@ -22,7 +22,8 @@ class PostManager():
     def get_all_posts(self) -> list[Post]:
         posts = db.session.scalars(select(Post)).all()
         return posts
-    
+
+
     def get_user_posts(self, username):
         user = db.session.scalar(select(User).where(User.username == username))
         
@@ -31,11 +32,13 @@ class PostManager():
         
         posts = user.posts
         return posts
-    
+
+
     def get_post_by_id(self, id: int) -> Post:
         post = db.session.scalar(select(Post).where(Post.id == id))
         return post
-    
+
+
     def delete_post(self, post_id: int, user_id: int):
         rm_post = self.get_post_by_id(post_id)
         if not rm_post:
@@ -49,4 +52,41 @@ class PostManager():
             db.session.commit()
         except IntegrityError as e:
             db.session.rollback()
+            print("delete failed:", e)
+
+
+    def create_comment(self, text, user_id, post_id):
+        post = db.session.scalar(select(Post).where(Post.id == post_id))
+        
+        if not post:
+            raise ValueError("Post doesn't exist")
+        
+        comment = Comment(
+            text = text,
+            author = user_id,
+            post_id = post_id
+        )
+        
+        try:
+            db.session.add(comment)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
             print("Insert failed:", e)
+            
+            
+    def delete_comment(self, comment_id, user_id):
+        comment = db.session.scalar(select(Comment).where(Comment.id == comment_id))
+        
+        if not comment:
+            raise ValueError("Comment doesn't exist")
+        
+        if user_id != comment.author and user_id != comment.post.author:
+            raise PermissionError("You donnot have permission to delete the comment")
+        
+        try:
+            db.session.delete(comment)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            print("Delete failed:", e)

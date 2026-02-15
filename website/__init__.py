@@ -34,7 +34,7 @@ def create_app():
     app.register_blueprint(views)
     app.register_blueprint(auth)
     
-    from .models import User, Post
+    from .models import User
     
     create_database(app)
     
